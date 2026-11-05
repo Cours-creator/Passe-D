@@ -31,6 +31,7 @@ let replayCancelled = false;
 let replayTimer = null;
 let cancelDelay = null;
 let lastPreparationResult = null;
+let matchTeamIds = { home: null, away: null };
 
 const labels = {
   goal: 'But',
@@ -38,6 +39,9 @@ const labels = {
   red_card: 'Carton rouge',
   substitution: 'Remplacement',
   temps_mort: 'Temps mort',
+  period_start: 'Coup de sifflet',
+  period_end: 'Coup de sifflet',
+  shootout: 'Tir au but',
   calm: 'Temps calme',
 };
 
@@ -79,8 +83,8 @@ function addTimelineEntry(event, kind = 'event') {
   timeline.append(item);
 
   if (event.type === 'goal') {
-    if (event.team_id === 'fc-aster') score.home += 1;
-    if (event.team_id === 'etoile-nord') score.away += 1;
+    if (event.team_id === matchTeamIds.home) score.home += 1;
+    if (event.team_id === matchTeamIds.away) score.away += 1;
     document.querySelector('#home-score').textContent = score.home;
     document.querySelector('#away-score').textContent = score.away;
   }
@@ -234,7 +238,7 @@ function toggleFactPin(fact) {
 function searchPreparation(event) {
   event.preventDefault();
   if (!demoDatabase) {
-    preparationStatus.textContent = 'La base de démonstration n’est pas encore chargée.';
+    preparationStatus.textContent = 'La base n’est pas encore chargée.';
     preparationStatus.classList.add('is-error');
     return;
   }
@@ -246,6 +250,26 @@ function searchPreparation(event) {
     awayTeam: document.querySelector('#away-team-input').value,
   }, demoDatabase);
   renderPreparationResult(lastPreparationResult);
+}
+
+function applyRealDataMode(meta) {
+  window.PasseDPreparation.useRealDataStorage();
+  document.querySelector('.topbar .demo-tag').lastChild.textContent = 'DONNÉES RÉELLES · MATCH REJOUÉ';
+  document.querySelector('.demo-tag-light').lastChild.textContent = 'DONNÉES RÉELLES';
+  document.querySelector('footer').textContent = `Prototype local · ${meta.attribution}`;
+  const attribution = document.querySelector('#data-attribution');
+  attribution.hidden = false;
+  attribution.querySelector('span').textContent = `${meta.attribution}. Statistiques calculées ${meta.scope}.`;
+  const placeholders = {
+    '#player-input': meta.examples.player,
+    '#competition-input': meta.examples.competition,
+    '#stadium-input': meta.examples.stadium,
+    '#home-team-input': meta.examples.home_team,
+    '#away-team-input': meta.examples.away_team,
+  };
+  for (const [selector, value] of Object.entries(placeholders)) {
+    document.querySelector(selector).placeholder = `Ex. ${value}`;
+  }
 }
 
 async function loadMatch() {
@@ -269,7 +293,7 @@ async function loadMatch() {
     totalEvents = demoEvents.length;
     eventCount.textContent = `0 / ${totalEvents}`;
   } else {
-    const [response, databaseResponse] = await Promise.all([fetch('/api/demo'), fetch('/data/demo_data.json')]);
+    const [response, databaseResponse] = await Promise.all([fetch('/api/demo'), fetch('/api/database')]);
     if (!response.ok || !databaseResponse.ok) throw new Error('Données de rencontre indisponibles');
     const data = await response.json();
     demoDatabase = await databaseResponse.json();
@@ -279,7 +303,11 @@ async function loadMatch() {
     competition = data.competition;
   }
 
+  matchTeamIds = { home: demoDatabase.match.home_team_id, away: demoDatabase.match.away_team_id };
+  if (demoDatabase.meta?.mode === 'real') applyRealDataMode(demoDatabase.meta);
   document.querySelector('#home-team').textContent = homeTeam;
+  document.querySelector('.mark-home').textContent = homeTeam.charAt(0);
+  document.querySelector('.mark-away').textContent = awayTeam.charAt(0);
   document.querySelector('#away-team').textContent = awayTeam;
   document.querySelector('#stadium').textContent = stadium;
   document.querySelector('#competition').textContent = competition;
@@ -337,7 +365,7 @@ async function playStaticReplay() {
   if (replayCancelled) return;
   startButton.disabled = false;
   stopButton.disabled = true;
-  showStatus('SIMULATION TERMINÉE');
+  showStatus('REJEU TERMINÉ');
 }
 
 function startReplay() {
@@ -381,7 +409,7 @@ function startReplay() {
     stream = null;
     startButton.disabled = false;
     stopButton.disabled = true;
-    showStatus('SIMULATION TERMINÉE');
+    showStatus('REJEU TERMINÉ');
   });
 
   stream.onerror = () => {
@@ -401,7 +429,7 @@ function stopReplay() {
   stream = null;
   startButton.disabled = false;
   stopButton.disabled = true;
-  showStatus('SIMULATION ARRÊTÉE');
+  showStatus('REJEU ARRÊTÉ');
 }
 
 startButton.addEventListener('click', startReplay);

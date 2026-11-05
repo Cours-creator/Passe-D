@@ -151,3 +151,7 @@ footer { padding-top: 14px; color: var(--muted); font: 9px var(--mono); text-tra
   .team-mark { display: none; }
   .button { padding: 0 10px; }
 }
+
+.data-attribution { display: flex; align-items: center; gap: 12px; margin-top: 24px; font-size: 13px; }
+.data-attribution[hidden] { display: none; }
+.data-attribution img { height: 28px; width: auto; }

@@ -1,7 +1,7 @@
 (function (root) {
   function selectSuggestions(event, database, limit = 3) {
     const type = event.type || 'calm';
-    const trigger = type === 'temps_mort' ? 'timeout' : type;
+    const trigger = ['temps_mort', 'period_start', 'period_end'].includes(type) ? 'timeout' : type;
     const playerIds = event.player_ids || [];
     const context = {
       player_id: event.player_id,

@@ -11,11 +11,27 @@ from app.selector import select_suggestions
 
 BASE_DIR = Path(__file__).parent
 STATIC_DIR = BASE_DIR / "static"
-DATABASE = json.loads((BASE_DIR / "data" / "demo_data.json").read_text(encoding="utf-8"))
-EVENTS = json.loads((BASE_DIR / "data" / "match_events.json").read_text(encoding="utf-8"))
-MATCH = DATABASE["match"]
+LOCAL_DIR = BASE_DIR / "data" / "local"
 
-app = FastAPI(title="Passe D · Démonstration")
+
+def load_data(data_dir=BASE_DIR / "data", local_dir=LOCAL_DIR):
+    """Utilise la base réelle générée en local, sinon la démonstration fictive."""
+    database_path = local_dir / "database.json"
+    events_path = local_dir / "events.json"
+    if not (database_path.exists() and events_path.exists()):
+        database_path = data_dir / "demo_data.json"
+        events_path = data_dir / "match_events.json"
+    return (
+        json.loads(database_path.read_text(encoding="utf-8")),
+        json.loads(events_path.read_text(encoding="utf-8")),
+    )
+
+
+DATABASE, EVENTS = load_data()
+MATCH = DATABASE["match"]
+DATA_MODE = DATABASE.get("meta", {}).get("mode", "demo")
+
+app = FastAPI(title="Passe D")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/data", StaticFiles(directory=BASE_DIR / "data"), name="data")
 
@@ -27,7 +43,12 @@ async def index():
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "mode": "demo"}
+    return {"status": "ok", "mode": DATA_MODE}
+
+
+@app.get("/api/database")
+async def database():
+    return DATABASE
 
 
 @app.get("/api/demo")
@@ -40,6 +61,7 @@ async def demo():
         "away_team": teams[MATCH["away_team_id"]],
         "stadium": stadium["name"],
         "competition": MATCH["competition"],
+        "mode": DATA_MODE,
     }
 
 
@@ -63,6 +85,7 @@ def _sse(event_name, payload):
 async def replay(request: Request):
     async def stream():
         yield _sse("started", {"total": len(EVENTS), "match_id": MATCH["id"]})
+        shown = set()
 
         for index, event in enumerate(EVENTS):
             delay = max(0, float(event.get("delay_seconds", 1)))
@@ -71,13 +94,15 @@ async def replay(request: Request):
                 if await request.is_disconnected():
                     return
                 calm_context = _event_context({"type": "calm", "team_id": event.get("team_id")})
+                calm_suggestions = select_suggestions(calm_context, DATABASE, exclude=shown)
+                shown.update(item["source_id"] for item in calm_suggestions)
                 yield _sse(
                     "moment",
                     {
                         "kind": "calm",
                         "minute": event["minute"],
                         "second": event["second"],
-                        "suggestions": select_suggestions(calm_context, DATABASE),
+                        "suggestions": calm_suggestions,
                     },
                 )
                 await asyncio.sleep(delay / 2)

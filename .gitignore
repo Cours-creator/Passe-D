@@ -2,3 +2,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
+
+# Données réelles : le contrat StatsBomb interdit de les redistribuer
+.cache/
+app/data/local/
