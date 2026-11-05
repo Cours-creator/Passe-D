@@ -1,6 +1,6 @@
 # Passe D · Prototype de régie football
 
-Passe D est un assistant éditorial qui fournit aux commentateurs des faits vérifiables pendant une rencontre. Ce prototype local rejoue un match fictif et affiche jusqu'à trois suggestions classées par des règles simples. Il ne génère pas de faits et ne remplace pas le commentateur.
+Passe D est un assistant éditorial qui fournit aux commentateurs des faits vérifiables pendant une rencontre. La démonstration rejoue un match fictif et affiche jusqu'à trois suggestions classées par des règles simples. Elle ne génère pas de faits et ne remplace pas le commentateur.
 
 ## Installation
 
@@ -21,6 +21,10 @@ python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Ouvrir ensuite `http://localhost:8000` dans le navigateur. Dans Codespaces, ouvrir le port 8000 depuis l’onglet **Ports**. Cliquer sur **Lancer le direct** pour rejouer la séquence; **Arrêter** ferme le flux en cours.
+
+## Publication sur GitHub Pages
+
+Le fichier `index.html` à la racine fournit une version statique autonome. Dans **Settings > Pages**, choisir **GitHub Actions** comme source de déploiement. Le workflow `.github/workflows/nextjs.yml` publie la page et ses données à chaque push sur `main`. Cette version lit les fichiers JSON et rejoue les événements dans le navigateur; elle ne nécessite pas le serveur FastAPI.
 
 ## Tests
 

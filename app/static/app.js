@@ -6,11 +6,17 @@ const stateLabel = document.querySelector('#connection-state');
 const eventCount = document.querySelector('#event-count');
 const suggestionCount = document.querySelector('#suggestion-count');
 const suggestionIntro = document.querySelector('#suggestion-intro');
+const staticMode = document.documentElement.dataset.mode === 'static';
 
 let stream = null;
+let demoDatabase = null;
+let demoEvents = [];
 let score = { home: 0, away: 0 };
 let receivedEvents = 0;
 let totalEvents = 0;
+let replayCancelled = false;
+let replayTimer = null;
+let cancelDelay = null;
 
 const labels = {
   goal: 'But',
@@ -100,16 +106,102 @@ function renderSuggestions(items, kind) {
 }
 
 async function loadMatch() {
-  const response = await fetch('/api/demo');
-  if (!response.ok) throw new Error('Données de rencontre indisponibles');
-  const data = await response.json();
-  document.querySelector('#home-team').textContent = data.home_team;
-  document.querySelector('#away-team').textContent = data.away_team;
-  document.querySelector('#stadium').textContent = data.stadium;
-  document.querySelector('#competition').textContent = data.competition;
+  let homeTeam;
+  let awayTeam;
+  let stadium;
+  let competition;
+
+  if (staticMode) {
+    const dataUrl = new URL('app/data/demo_data.json', document.baseURI);
+    const eventsUrl = new URL('app/data/match_events.json', document.baseURI);
+    const [dataResponse, eventsResponse] = await Promise.all([fetch(dataUrl), fetch(eventsUrl)]);
+    if (!dataResponse.ok || !eventsResponse.ok) throw new Error('Données de démonstration indisponibles');
+    demoDatabase = await dataResponse.json();
+    demoEvents = await eventsResponse.json();
+    const match = demoDatabase.match;
+    homeTeam = demoDatabase.teams.find((team) => team.id === match.home_team_id).name;
+    awayTeam = demoDatabase.teams.find((team) => team.id === match.away_team_id).name;
+    stadium = demoDatabase.stadiums.find((item) => item.id === match.stadium_id).name;
+    competition = match.competition;
+    totalEvents = demoEvents.length;
+    eventCount.textContent = `0 / ${totalEvents}`;
+  } else {
+    const response = await fetch('/api/demo');
+    if (!response.ok) throw new Error('Données de rencontre indisponibles');
+    const data = await response.json();
+    homeTeam = data.home_team;
+    awayTeam = data.away_team;
+    stadium = data.stadium;
+    competition = data.competition;
+  }
+
+  document.querySelector('#home-team').textContent = homeTeam;
+  document.querySelector('#away-team').textContent = awayTeam;
+  document.querySelector('#stadium').textContent = stadium;
+  document.querySelector('#competition').textContent = competition;
+}
+
+function waitForReplay(milliseconds) {
+  return new Promise((resolve) => {
+    cancelDelay = resolve;
+    replayTimer = window.setTimeout(() => {
+      replayTimer = null;
+      cancelDelay = null;
+      resolve();
+    }, milliseconds);
+  });
+}
+
+function cancelReplayWait() {
+  if (replayTimer !== null) window.clearTimeout(replayTimer);
+  replayTimer = null;
+  if (cancelDelay) cancelDelay();
+  cancelDelay = null;
+}
+
+async function playStaticReplay() {
+  for (const event of demoEvents) {
+    const delay = Math.max(0, Number(event.delay_seconds ?? 1));
+    if (delay >= 3) {
+      await waitForReplay(delay * 500);
+      if (replayCancelled) return;
+      renderSuggestions(
+        window.PasseDSelector.selectSuggestions({ type: 'calm', team_id: event.team_id }, demoDatabase),
+        'calm',
+      );
+      await waitForReplay(delay * 500);
+    } else {
+      await waitForReplay(delay * 1000);
+    }
+    if (replayCancelled) return;
+
+    const context = { ...event, match_id: demoDatabase.match.id, stadium_id: demoDatabase.match.stadium_id };
+    if (event.type === 'substitution') {
+      context.player_ids = [event.player_out_id, event.player_in_id];
+    }
+    addTimelineEntry(event);
+    receivedEvents += 1;
+    eventCount.textContent = `${receivedEvents} / ${totalEvents}`;
+    renderSuggestions(window.PasseDSelector.selectSuggestions(context, demoDatabase), 'event');
+  }
+
+  if (replayCancelled) return;
+  startButton.disabled = false;
+  stopButton.disabled = true;
+  showStatus('SIMULATION TERMINÉE');
 }
 
 function startReplay() {
+  if (staticMode) {
+    resetView();
+    replayCancelled = false;
+    startButton.disabled = true;
+    stopButton.disabled = false;
+    showStatus('DIRECT EN COURS', true);
+    playStaticReplay();
+    return;
+  }
+
   if (stream) stream.close();
   resetView();
   startButton.disabled = true;
@@ -154,6 +246,8 @@ function startReplay() {
 }
 
 function stopReplay() {
+  replayCancelled = true;
+  cancelReplayWait();
   if (stream) stream.close();
   stream = null;
   startButton.disabled = false;
@@ -163,4 +257,8 @@ function stopReplay() {
 
 startButton.addEventListener('click', startReplay);
 stopButton.addEventListener('click', stopReplay);
-loadMatch().catch(() => showStatus('SERVEUR INDISPONIBLE'));
+loadMatch()
+  .then(() => {
+    startButton.disabled = false;
+  })
+  .catch(() => showStatus('SERVEUR INDISPONIBLE'));
