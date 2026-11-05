@@ -14,7 +14,12 @@
     { id: 'team', label: 'Équipe' },
   ];
   const interestOrder = { record: 0, performance: 1, statistic: 2 };
-  const storageKey = 'passe-d-preparation-pins-v1';
+  const baseStorageKey = 'passe-d-preparation-pins-v1';
+  let storageKey = baseStorageKey;
+
+  function useRealDataStorage() {
+    storageKey = `${baseStorageKey}-reel`;
+  }
 
   function normalize(value) {
     return value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr');
@@ -127,6 +132,6 @@
     return facts.length;
   }
 
-  root.PasseDPreparation = { searchPreparation, readPinnedFacts, togglePinnedFact, renderPinnedFacts };
+  root.PasseDPreparation = { searchPreparation, readPinnedFacts, togglePinnedFact, renderPinnedFacts, useRealDataStorage };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.PasseDPreparation;
 })(typeof window !== 'undefined' ? window : globalThis);

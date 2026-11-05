@@ -1,10 +1,13 @@
 """Moteur de règles déterministes pour les suggestions de commentaires."""
 
 
-def select_suggestions(event, database, limit=3):
-    """Classe les faits compatibles avec l'événement, sans en créer de nouveaux."""
+def select_suggestions(event, database, limit=3, exclude=()):
+    """Classe les faits compatibles avec l'événement, sans en créer de nouveaux.
+
+    `exclude` écarte des faits déjà proposés, pour ne pas répéter les mêmes repères.
+    """
     event_type = event.get("type", "calm")
-    trigger = {"temps_mort": "timeout"}.get(event_type, event_type)
+    trigger = {"temps_mort": "timeout", "period_start": "timeout", "period_end": "timeout"}.get(event_type, event_type)
     context = {
         "player_id": event.get("player_id"),
         "player_ids": event.get("player_ids", []),
@@ -15,6 +18,8 @@ def select_suggestions(event, database, limit=3):
     candidates = []
 
     for record in database.get("records", []):
+        if record["id"] in exclude:
+            continue
         triggers = record.get("triggers", [])
         if trigger not in triggers and "any" not in triggers:
             continue

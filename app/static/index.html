@@ -32,10 +32,10 @@
         <div class="venue-line"><span class="venue-pin" aria-hidden="true">⌖</span><span id="stadium">Parc des Brumes</span></div>
       </section>
 
-      <section class="control-row" aria-label="Commandes de simulation">
+      <section class="control-row" aria-label="Commandes de rejeu">
         <div class="section-heading"><span class="eyebrow">ASSISTANCE ÉDITORIALE</span><h1>Régie du match</h1></div>
         <div class="controls">
-          <button class="button button-primary" id="start-button" type="button"><span aria-hidden="true">▶</span> Lancer le direct</button>
+          <button class="button button-primary" id="start-button" type="button"><span aria-hidden="true">▶</span> Lancer le rejeu</button>
           <button class="button button-quiet" id="stop-button" type="button" disabled><span aria-hidden="true">■</span> Arrêter</button>
         </div>
       </section>
@@ -44,7 +44,7 @@
         <div class="timeline-panel">
           <div class="panel-head"><div><span class="eyebrow">CHRONOLOGIE</span><h2>Fil du match</h2></div><span class="event-count" id="event-count">0 / 4</span></div>
           <ol class="timeline" id="timeline" aria-live="polite">
-            <li class="empty-timeline" id="empty-timeline"><span class="empty-icon">↗</span><span>Le fil apparaîtra au lancement de la simulation.</span></li>
+            <li class="empty-timeline" id="empty-timeline"><span class="empty-icon">↗</span><span>Le fil apparaîtra au lancement du rejeu.</span></li>
           </ol>
         </div>
 
@@ -89,6 +89,7 @@
         <div class="preparation-results" id="preparation-results" aria-live="polite"></div>
       </section>
 
+      <aside class="data-attribution" id="data-attribution" hidden><img src="/data/local/statsbomb-logo.png" alt="StatsBomb" height="28"><span></span></aside>
       <footer>Prototype local · Aucun flux externe · Les faits affichés sont fictifs</footer>
     </main>
   </body>
