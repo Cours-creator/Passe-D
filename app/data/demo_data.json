@@ -1,25 +1,43 @@
 {
   "match": {
     "id": "match-demo-01",
-    "competition": "Ligue des Rives (démonstration)",
+    "competition": "Ligue des Rives",
+    "competition_id": "ligue-rives",
     "home_team_id": "fc-aster",
     "away_team_id": "etoile-nord",
     "stadium_id": "parc-des-brumes",
     "date": "2026-11-05"
   },
+  "competitions": [
+    {
+      "id": "ligue-rives",
+      "name": "Ligue des Rives",
+      "season": "2026-2027",
+      "team_ids": ["fc-aster", "etoile-nord"],
+      "matchdays": 6
+    },
+    {
+      "id": "coupe-rives",
+      "name": "Coupe des Rives",
+      "season": "2026",
+      "team_ids": ["fc-aster", "etoile-nord"],
+      "rounds": 3
+    }
+  ],
   "teams": [
-    {"id": "fc-aster", "name": "FC Astérion", "city": "Val-des-Lunes"},
-    {"id": "etoile-nord", "name": "Étoile du Nord", "city": "Montfaucon"}
+    {"id": "fc-aster", "name": "FC Astérion", "city": "Val-des-Lunes", "competition_ids": ["ligue-rives", "coupe-rives"]},
+    {"id": "etoile-nord", "name": "Étoile du Nord", "city": "Montfaucon", "competition_ids": ["ligue-rives", "coupe-rives"]}
   ],
   "players": [
-    {"id": "ines-vela", "name": "Inès Vela", "team_id": "fc-aster", "number": 9, "position": "Attaquante"},
-    {"id": "noe-sorin", "name": "Noé Sorin", "team_id": "fc-aster", "number": 6, "position": "Milieu"},
-    {"id": "maia-orne", "name": "Maïa Orne", "team_id": "etoile-nord", "number": 11, "position": "Attaquante"},
-    {"id": "ilan-deroz", "name": "Ilan Deroz", "team_id": "etoile-nord", "number": 4, "position": "Défenseur"},
-    {"id": "sacha-elve", "name": "Sacha Elve", "team_id": "fc-aster", "number": 17, "position": "Ailier"}
+    {"id": "ines-vela", "name": "Inès Vela", "team_id": "fc-aster", "competition_ids": ["ligue-rives", "coupe-rives"], "number": 9, "position": "Attaquante", "age": 25, "preferred_foot": "droit"},
+    {"id": "noe-sorin", "name": "Noé Sorin", "team_id": "fc-aster", "competition_ids": ["ligue-rives", "coupe-rives"], "number": 6, "position": "Milieu", "age": 27, "preferred_foot": "gauche"},
+    {"id": "maia-orne", "name": "Maïa Orne", "team_id": "etoile-nord", "competition_ids": ["ligue-rives", "coupe-rives"], "number": 11, "position": "Attaquante", "age": 23, "preferred_foot": "droit"},
+    {"id": "ilan-deroz", "name": "Ilan Deroz", "team_id": "etoile-nord", "competition_ids": ["ligue-rives", "coupe-rives"], "number": 4, "position": "Défenseur", "age": 29, "preferred_foot": "droit"},
+    {"id": "sacha-elve", "name": "Sacha Elve", "team_id": "fc-aster", "competition_ids": ["ligue-rives", "coupe-rives"], "number": 17, "position": "Ailier", "age": 21, "preferred_foot": "gauche"}
   ],
   "stadiums": [
-    {"id": "parc-des-brumes", "name": "Parc des Brumes", "city": "Val-des-Lunes", "capacity": 18400}
+    {"id": "parc-des-brumes", "name": "Parc des Brumes", "city": "Val-des-Lunes", "capacity": 18400},
+    {"id": "stade-du-canal", "name": "Stade du Canal", "city": "Rivebasse", "capacity": 12300}
   ],
   "records": [
     {
@@ -29,7 +47,12 @@
       "fact": "Inès Vela a inscrit un triplé au Parc des Brumes lors de la finale fictive de la Coupe des Rives 2024.",
       "triggers": ["goal"],
       "targets": {"player_id": "ines-vela", "stadium_id": "parc-des-brumes"},
-      "priority": 100
+      "priority": 100,
+      "preparation": {
+        "category": "cross",
+        "interest": "record",
+        "targets": {"player_id": "ines-vela", "competition_id": "coupe-rives", "stadium_id": "parc-des-brumes"}
+      }
     },
     {
       "id": "profile-vela-01",
@@ -38,7 +61,8 @@
       "fact": "Inès Vela porte le numéro 9 et joue au poste d'attaquante pour le FC Astérion.",
       "triggers": ["goal", "substitution", "yellow_card", "red_card"],
       "targets": {"player_id": "ines-vela"},
-      "priority": 25
+      "priority": 25,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "ines-vela"}}
     },
     {
       "id": "team-aster-01",
@@ -65,7 +89,8 @@
       "fact": "Le Parc des Brumes, à Val-des-Lunes, peut accueillir 18 400 spectateurs.",
       "triggers": ["calm", "timeout"],
       "targets": {"stadium_id": "parc-des-brumes"},
-      "priority": 20
+      "priority": 20,
+      "preparation": {"category": "stadium", "interest": "statistic", "targets": {"stadium_id": "parc-des-brumes"}}
     },
     {
       "id": "match-demo-01",
@@ -83,7 +108,8 @@
       "fact": "Noé Sorin porte le numéro 6 et joue au poste de milieu pour le FC Astérion.",
       "triggers": ["substitution", "yellow_card", "red_card"],
       "targets": {"player_id": "noe-sorin"},
-      "priority": 20
+      "priority": 20,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "noe-sorin"}}
     },
     {
       "id": "profile-orne-01",
@@ -92,7 +118,8 @@
       "fact": "Maïa Orne porte le numéro 11 et joue au poste d'attaquante pour l'Étoile du Nord.",
       "triggers": ["goal", "substitution", "yellow_card", "red_card"],
       "targets": {"player_id": "maia-orne"},
-      "priority": 20
+      "priority": 20,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "maia-orne"}}
     },
     {
       "id": "profile-elve-01",
@@ -101,7 +128,198 @@
       "fact": "Sacha Elve porte le numéro 17 et joue au poste d'ailier pour le FC Astérion.",
       "triggers": ["substitution", "yellow_card", "red_card"],
       "targets": {"player_id": "sacha-elve"},
-      "priority": 20
+      "priority": 20,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "sacha-elve"}}
+    },
+    {
+      "id": "prep-ines-age-01",
+      "source_label": "Fiche joueur · Inès Vela",
+      "title": "Profil de la joueuse",
+      "fact": "La fiche fictive d'Inès Vela indique 25 ans et un pied préféré droit.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "ines-vela"}}
+    },
+    {
+      "id": "prep-noe-age-01",
+      "source_label": "Fiche joueur · Noé Sorin",
+      "title": "Profil du joueur",
+      "fact": "La fiche fictive de Noé Sorin indique 27 ans et un pied préféré gauche.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "noe-sorin"}}
+    },
+    {
+      "id": "prep-maia-age-01",
+      "source_label": "Fiche joueur · Maïa Orne",
+      "title": "Profil de la joueuse",
+      "fact": "La fiche fictive de Maïa Orne indique 23 ans et un pied préféré droit.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "maia-orne"}}
+    },
+    {
+      "id": "prep-ilan-age-01",
+      "source_label": "Fiche joueur · Ilan Deroz",
+      "title": "Profil du joueur",
+      "fact": "La fiche fictive d'Ilan Deroz indique 29 ans et un pied préféré droit.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "ilan-deroz"}}
+    },
+    {
+      "id": "prep-ilan-profile-01",
+      "source_label": "Fiche joueur · Ilan Deroz",
+      "title": "Repère sur le défenseur",
+      "fact": "Ilan Deroz porte le numéro 4 et joue au poste de défenseur pour l'Étoile du Nord.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "ilan-deroz"}}
+    },
+    {
+      "id": "prep-sacha-age-01",
+      "source_label": "Fiche joueur · Sacha Elve",
+      "title": "Profil du joueur",
+      "fact": "La fiche fictive de Sacha Elve indique 21 ans et un pied préféré gauche.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "player", "interest": "statistic", "targets": {"player_id": "sacha-elve"}}
+    },
+    {
+      "id": "prep-ligue-teams-01",
+      "source_label": "Fiche championnat · Ligue des Rives",
+      "title": "Équipes inscrites dans la démo",
+      "fact": "La fiche de démonstration associe le FC Astérion et l'Étoile du Nord à la Ligue des Rives.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "competition", "interest": "statistic", "targets": {"competition_id": "ligue-rives"}}
+    },
+    {
+      "id": "prep-ligue-format-01",
+      "source_label": "Fiche championnat · Ligue des Rives",
+      "title": "Format de la saison fictive",
+      "fact": "La saison 2026-2027 de démonstration est organisée sur 6 journées.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "competition", "interest": "statistic", "targets": {"competition_id": "ligue-rives"}}
+    },
+    {
+      "id": "prep-coupe-teams-01",
+      "source_label": "Fiche championnat · Coupe des Rives",
+      "title": "Équipes inscrites dans la démo",
+      "fact": "La fiche de démonstration associe le FC Astérion et l'Étoile du Nord à la Coupe des Rives.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "competition", "interest": "statistic", "targets": {"competition_id": "coupe-rives"}}
+    },
+    {
+      "id": "prep-coupe-format-01",
+      "source_label": "Fiche championnat · Coupe des Rives",
+      "title": "Format de la coupe fictive",
+      "fact": "La Coupe des Rives de démonstration compte 3 tours.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "competition", "interest": "statistic", "targets": {"competition_id": "coupe-rives"}}
+    },
+    {
+      "id": "prep-brumes-location-01",
+      "source_label": "Fiche stade · Parc des Brumes",
+      "title": "La ville du stade",
+      "fact": "Le Parc des Brumes se trouve à Val-des-Lunes.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "stadium", "interest": "statistic", "targets": {"stadium_id": "parc-des-brumes"}}
+    },
+    {
+      "id": "prep-canal-capacity-01",
+      "source_label": "Fiche stade · Stade du Canal",
+      "title": "Capacité du stade",
+      "fact": "Le Stade du Canal peut accueillir 12 300 spectateurs.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "stadium", "interest": "statistic", "targets": {"stadium_id": "stade-du-canal"}}
+    },
+    {
+      "id": "prep-canal-location-01",
+      "source_label": "Fiche stade · Stade du Canal",
+      "title": "La ville du stade",
+      "fact": "Le Stade du Canal se trouve à Rivebasse.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "stadium", "interest": "statistic", "targets": {"stadium_id": "stade-du-canal"}}
+    },
+    {
+      "id": "prep-ines-ligue-01",
+      "source_label": "Historique fictif · Inès Vela · Ligue des Rives",
+      "title": "Bilan en championnat",
+      "fact": "En Ligue des Rives 2026-2027, Inès Vela a inscrit 5 buts en 7 apparitions.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "performance", "targets": {"player_id": "ines-vela", "competition_id": "ligue-rives"}}
+    },
+    {
+      "id": "prep-ines-ligue-brumes-01",
+      "source_label": "Historique fictif · Inès Vela · Ligue des Rives · Parc des Brumes",
+      "title": "Une réussite au Parc",
+      "fact": "En Ligue des Rives 2026-2027, Inès Vela a marqué 2 buts en 2 apparitions au Parc des Brumes.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "record", "targets": {"player_id": "ines-vela", "competition_id": "ligue-rives", "stadium_id": "parc-des-brumes"}}
+    },
+    {
+      "id": "prep-ines-coupe-01",
+      "source_label": "Historique fictif · Inès Vela · Coupe des Rives",
+      "title": "Bilan en coupe",
+      "fact": "En Coupe des Rives 2026, Inès Vela a inscrit 2 buts en 3 apparitions.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "performance", "targets": {"player_id": "ines-vela", "competition_id": "coupe-rives"}}
+    },
+    {
+      "id": "prep-maia-ligue-01",
+      "source_label": "Historique fictif · Maïa Orne · Ligue des Rives",
+      "title": "Bilan en championnat",
+      "fact": "En Ligue des Rives 2026-2027, Maïa Orne a inscrit 4 buts en 6 apparitions.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "performance", "targets": {"player_id": "maia-orne", "competition_id": "ligue-rives"}}
+    },
+    {
+      "id": "prep-noe-ligue-01",
+      "source_label": "Historique fictif · Noé Sorin · Ligue des Rives",
+      "title": "Présence au milieu",
+      "fact": "En Ligue des Rives 2026-2027, Noé Sorin a disputé 8 apparitions et inscrit 1 but.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "performance", "targets": {"player_id": "noe-sorin", "competition_id": "ligue-rives"}}
+    },
+    {
+      "id": "prep-maia-coupe-brumes-01",
+      "source_label": "Historique fictif · Maïa Orne · Coupe des Rives · Parc des Brumes",
+      "title": "Un doublé en coupe",
+      "fact": "Maïa Orne a inscrit un doublé au Parc des Brumes pendant un match fictif de la Coupe des Rives 2026.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "record", "targets": {"player_id": "maia-orne", "competition_id": "coupe-rives", "stadium_id": "parc-des-brumes"}}
     }
   ]
 }

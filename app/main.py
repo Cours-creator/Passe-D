@@ -17,6 +17,7 @@ MATCH = DATABASE["match"]
 
 app = FastAPI(title="Passe D · Démonstration")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/data", StaticFiles(directory=BASE_DIR / "data"), name="data")
 
 
 @app.get("/")

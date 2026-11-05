@@ -7,15 +7,21 @@
     <title>Passe D · Régie en direct</title>
     <link rel="stylesheet" href="app/static/style.css">
     <script src="app/static/selector.js" defer></script>
+    <script src="app/static/preparation.js" defer></script>
     <script src="app/static/app.js" defer></script>
   </head>
   <body>
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Passe D, accueil"><span class="mark">PD</span><span>Passe D</span></a>
+      <nav class="view-tabs" role="tablist" aria-label="Mode de travail">
+        <button class="view-tab is-active" id="live-tab" type="button" role="tab" aria-selected="true" aria-controls="live-view">Direct</button>
+        <button class="view-tab" id="preparation-tab" type="button" role="tab" aria-selected="false" aria-controls="preparation-view">Préparation</button>
+      </nav>
       <span class="demo-tag"><span></span>DÉMONSTRATION · DONNÉES FICTIVES</span>
     </header>
 
     <main>
+      <section id="live-view" role="tabpanel" aria-labelledby="live-tab">
       <section class="match-strip" aria-label="Rencontre en cours">
         <div class="match-meta"><span class="live-state" id="connection-state">PRÊT À LANCER</span><span id="competition">Ligue des Rives</span></div>
         <div class="scoreboard">
@@ -44,6 +50,10 @@
 
         <aside class="suggestions-panel" aria-labelledby="suggestions-title">
           <div class="panel-head"><div><span class="eyebrow">À L’ANTENNE</span><h2 id="suggestions-title">Suggestions</h2></div><span class="suggestion-count" id="suggestion-count">0</span></div>
+          <section class="pinned-panel" id="pinned-section" aria-labelledby="pinned-title" hidden>
+            <div class="panel-head pinned-head"><div><span class="eyebrow">REPÈRES SAUVEGARDÉS</span><h3 id="pinned-title">Fiche de préparation</h3></div><span class="suggestion-count" id="pinned-count">0</span></div>
+            <div class="pinned-list" id="pinned-list"></div>
+          </section>
           <p class="suggestion-intro" id="suggestion-intro">Les informations vérifiées apparaîtront ici au fil du jeu.</p>
           <div class="suggestion-list" id="suggestions" aria-live="polite" aria-relevant="additions text">
             <div class="empty-suggestions" id="empty-suggestions">En attente du premier temps fort.</div>
@@ -51,6 +61,31 @@
           <div class="source-note"><span class="source-dot"></span>Chaque fait renvoie à sa fiche source.</div>
         </aside>
       </section>
+      </section>
+
+      <section id="preparation-view" role="tabpanel" aria-labelledby="preparation-tab" hidden>
+        <div class="preparation-heading">
+          <div><span class="eyebrow">AVANT LE COUP D’ENVOI</span><h1>Préparation du match</h1></div>
+          <span class="demo-tag demo-tag-light"><span></span>DONNÉES FICTIVES</span>
+        </div>
+        <p class="preparation-intro">Choisissez un ou plusieurs éléments pour consulter les faits disponibles dans la base.</p>
+        <form class="preparation-form" id="preparation-form">
+          <label class="preparation-field" for="player-input"><span>Joueur <small>facultatif</small></span><input id="player-input" name="player" list="player-options" autocomplete="off" placeholder="Ex. Inès Vela"></label>
+          <datalist id="player-options"></datalist>
+          <label class="preparation-field" for="competition-input"><span>Championnat <small>facultatif</small></span><input id="competition-input" name="competition" list="competition-options" autocomplete="off" placeholder="Ex. Ligue des Rives"></label>
+          <datalist id="competition-options"></datalist>
+          <label class="preparation-field" for="stadium-input"><span>Stade <small>facultatif</small></span><input id="stadium-input" name="stadium" list="stadium-options" autocomplete="off" placeholder="Ex. Parc des Brumes"></label>
+          <datalist id="stadium-options"></datalist>
+          <button class="button button-primary preparation-submit" type="submit"><span aria-hidden="true">⌕</span> Rechercher les faits</button>
+        </form>
+        <p class="preparation-status" id="preparation-status" role="status" aria-live="polite">La recherche s’appuie uniquement sur les données présentes dans la base.</p>
+        <section class="preparation-pinned" id="preparation-pinned-section" aria-labelledby="preparation-pinned-title" hidden>
+          <div class="preparation-group-head"><h2 id="preparation-pinned-title">Fiche épinglée pour le match</h2><span class="preparation-group-count" id="preparation-pin-count">0 FAIT</span></div>
+          <div class="preparation-facts" id="preparation-pinned-list"></div>
+        </section>
+        <div class="preparation-results" id="preparation-results" aria-live="polite"></div>
+      </section>
+
       <footer>Démo autonome · Aucun service externe · Faits fictifs</footer>
     </main>
   </body>

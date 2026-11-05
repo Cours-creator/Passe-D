@@ -4,7 +4,7 @@ Passe D est un assistant éditorial qui fournit aux commentateurs des faits vér
 
 ## Installation
 
-Python 3.10 ou plus récent est nécessaire.
+Python 3.10 ou plus récent est nécessaire. Node.js 18 ou plus récent est requis pour la suite de tests JavaScript de préparation.
 
 ```bash
 python -m venv .venv
@@ -20,7 +20,7 @@ pip install -r requirements.txt
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Ouvrir ensuite `http://localhost:8000` dans le navigateur. Dans Codespaces, ouvrir le port 8000 depuis l’onglet **Ports**. Cliquer sur **Lancer le direct** pour rejouer la séquence; **Arrêter** ferme le flux en cours.
+Ouvrir ensuite `http://localhost:8000` dans le navigateur. Dans Codespaces, ouvrir le port 8000 depuis l’onglet **Ports**. L’onglet **Direct** rejoue la séquence; l’onglet **Préparation** permet de rechercher puis d’épingler des faits avant la rencontre.
 
 ## Publication sur GitHub Pages
 
@@ -30,15 +30,17 @@ Le fichier `index.html` à la racine fournit une version statique autonome. Dans
 
 ```bash
 python -m pytest -q
+node --test tests/test_preparation.js
 ```
 
-Les tests couvrent l’anecdote historique au bon stade, l’absence de suggestion sans correspondance, les informations de temps calme, la limite de trois résultats et les deux joueurs d’un remplacement.
+Les tests Python couvrent l’anecdote historique au bon stade, l’absence de suggestion sans correspondance, les informations de temps calme, la limite de trois résultats et les deux joueurs d’un remplacement. Les tests Node couvrent les recherches de préparation, les faits croisés, les combinaisons sans fait croisé, les entrées inconnues et l’affichage d’un fait épinglé en direct.
 
 ## Fonctionnement
 
-- `app/data/demo_data.json` contient la rencontre, les équipes, les joueurs, le stade et les fiches factuelles. Chaque fiche possède un identifiant source, des déclencheurs, des cibles et une priorité.
+- `app/data/demo_data.json` contient la rencontre, les championnats, les équipes, les joueurs, les stades et les fiches factuelles. Chaque fait affiché indique l’identifiant et le libellé de sa source.
 - `app/data/match_events.json` définit les événements horodatés. `delay_seconds` règle leur délai de rejeu en temps réel; une pause de contexte est envoyée au milieu des délais d’au moins trois secondes.
 - `app/selector.py` est le moteur déterministe isolé. Il filtre par déclencheur et identifiants ciblés, puis classe par priorité et spécificité. Il retourne zéro à trois faits existants avec leur source.
+- `app/static/preparation.js` contient les règles de recherche par entité, le classement des faits et la persistance des épingles dans le stockage local du navigateur.
 - `app/main.py` expose l’API FastAPI et diffuse les instants du match au navigateur par Server-Sent Events (SSE).
 - `app/static/` contient l’interface en HTML, CSS et JavaScript natifs.
 - `tests/test_selector.py` teste les règles sans dépendre du serveur.
@@ -47,4 +49,4 @@ Les événements `temps_mort` et les interruptions de jeu calme sont des ressort
 
 ## Limites
 
-Toutes les personnes, équipes, rencontres, statistiques et anecdotes sont fictives. Les données sont petites, statiques et écrites à la main; aucun fournisseur de données, service externe, modèle d’IA, compte utilisateur ou stockage persistant n’est utilisé. Les déclencheurs et poids sont des règles de démonstration, à valider avec des commentateurs et à enrichir avant toute utilisation réelle. Le chronomètre du match suit les horodatages du fichier et le score n’est mis à jour que sur les buts simulés.
+Toutes les personnes, équipes, championnats, rencontres, statistiques et anecdotes sont fictifs. Les données sont petites, statiques et écrites à la main; aucun fournisseur de données, service externe, modèle d’IA, compte utilisateur ou stockage serveur n’est utilisé. Les épingles sont conservées dans le stockage local du navigateur. Les règles sont à valider avec des commentateurs et à enrichir avant toute utilisation réelle. Le chronomètre du match suit les horodatages du fichier et le score n’est mis à jour que sur les buts simulés.

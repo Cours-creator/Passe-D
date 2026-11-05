@@ -7,6 +7,19 @@ const eventCount = document.querySelector('#event-count');
 const suggestionCount = document.querySelector('#suggestion-count');
 const suggestionIntro = document.querySelector('#suggestion-intro');
 const staticMode = document.documentElement.dataset.mode === 'static';
+const liveView = document.querySelector('#live-view');
+const preparationView = document.querySelector('#preparation-view');
+const liveTab = document.querySelector('#live-tab');
+const preparationTab = document.querySelector('#preparation-tab');
+const preparationForm = document.querySelector('#preparation-form');
+const preparationStatus = document.querySelector('#preparation-status');
+const preparationResults = document.querySelector('#preparation-results');
+const pinnedSection = document.querySelector('#pinned-section');
+const pinnedList = document.querySelector('#pinned-list');
+const pinnedCount = document.querySelector('#pinned-count');
+const preparationPinnedSection = document.querySelector('#preparation-pinned-section');
+const preparationPinnedList = document.querySelector('#preparation-pinned-list');
+const preparationPinCount = document.querySelector('#preparation-pin-count');
 
 let stream = null;
 let demoDatabase = null;
@@ -17,6 +30,7 @@ let totalEvents = 0;
 let replayCancelled = false;
 let replayTimer = null;
 let cancelDelay = null;
+let lastPreparationResult = null;
 
 const labels = {
   goal: 'But',
@@ -105,6 +119,133 @@ function renderSuggestions(items, kind) {
   }
 }
 
+function setView(view) {
+  const showPreparation = view === 'preparation';
+  liveView.hidden = showPreparation;
+  preparationView.hidden = !showPreparation;
+  liveTab.classList.toggle('is-active', !showPreparation);
+  preparationTab.classList.toggle('is-active', showPreparation);
+  liveTab.setAttribute('aria-selected', String(!showPreparation));
+  preparationTab.setAttribute('aria-selected', String(showPreparation));
+}
+
+function populateOptions(listId, items) {
+  const list = document.querySelector(`#${listId}`);
+  list.replaceChildren();
+  for (const item of items) {
+    const option = document.createElement('option');
+    option.value = item.name;
+    list.append(option);
+  }
+}
+
+function createPreparationCard(fact, pinned = false) {
+  const card = document.createElement('article');
+  card.className = 'preparation-fact';
+  const title = document.createElement('h3');
+  title.className = 'preparation-fact-title';
+  title.textContent = fact.title;
+  const copy = document.createElement('p');
+  copy.className = 'preparation-fact-copy';
+  copy.textContent = fact.fact;
+  const source = document.createElement('span');
+  source.className = 'preparation-fact-source';
+  source.textContent = `SOURCE ${fact.source_id} · ${fact.source_label}`;
+  const button = document.createElement('button');
+  button.className = 'pin-button';
+  button.type = 'button';
+  button.setAttribute('aria-pressed', String(pinned));
+  button.textContent = pinned ? 'Retirer de la fiche' : 'Épingler pour le match';
+  button.addEventListener('click', () => toggleFactPin(fact));
+  card.append(title, copy, source, button);
+  return card;
+}
+
+function renderPinnedFacts() {
+  const facts = window.PasseDPreparation.readPinnedFacts();
+  pinnedSection.hidden = facts.length === 0;
+  pinnedCount.textContent = String(facts.length);
+  preparationPinnedSection.hidden = facts.length === 0;
+  preparationPinCount.textContent = `${facts.length} FAIT${facts.length === 1 ? '' : 'S'}`;
+  window.PasseDPreparation.renderPinnedFacts(
+    pinnedList,
+    facts,
+    (fact) => createPreparationCard(fact, true),
+  );
+  window.PasseDPreparation.renderPinnedFacts(
+    preparationPinnedList,
+    facts,
+    (fact) => createPreparationCard(fact, true),
+  );
+}
+
+function renderPreparationResult(result) {
+  preparationResults.replaceChildren();
+  preparationStatus.classList.toggle('is-error', Boolean(result.error));
+  if (result.error) {
+    preparationStatus.textContent = result.error;
+    return;
+  }
+
+  preparationStatus.textContent = result.factCount
+    ? `${result.factCount} fait${result.factCount === 1 ? '' : 's'} trouvé${result.factCount === 1 ? '' : 's'} dans la base.`
+    : 'Aucun fait disponible pour cette sélection.';
+
+  const pinnedIds = new Set(window.PasseDPreparation.readPinnedFacts().map((fact) => fact.source_id));
+  for (const group of result.groups) {
+    const section = document.createElement('section');
+    section.className = 'preparation-group';
+    const heading = document.createElement('div');
+    heading.className = 'preparation-group-head';
+    const title = document.createElement('h2');
+    title.textContent = group.label;
+    const count = document.createElement('span');
+    count.className = 'preparation-group-count';
+    count.textContent = `${group.facts.length} FAIT${group.facts.length === 1 ? '' : 'S'}`;
+    heading.append(title, count);
+    section.append(heading);
+
+    if (group.facts.length) {
+      const cards = document.createElement('div');
+      cards.className = 'preparation-facts';
+      for (const fact of group.facts) cards.append(createPreparationCard(fact, pinnedIds.has(fact.source_id)));
+      section.append(cards);
+    } else {
+      const empty = document.createElement('p');
+      empty.className = 'preparation-empty';
+      empty.textContent = group.message;
+      section.append(empty);
+    }
+    preparationResults.append(section);
+  }
+}
+
+function toggleFactPin(fact) {
+  const result = window.PasseDPreparation.togglePinnedFact(fact);
+  if (result.error) {
+    preparationStatus.textContent = result.error;
+    preparationStatus.classList.add('is-error');
+    return;
+  }
+  renderPinnedFacts();
+  if (lastPreparationResult && !lastPreparationResult.error) renderPreparationResult(lastPreparationResult);
+}
+
+function searchPreparation(event) {
+  event.preventDefault();
+  if (!demoDatabase) {
+    preparationStatus.textContent = 'La base de démonstration n’est pas encore chargée.';
+    preparationStatus.classList.add('is-error');
+    return;
+  }
+  lastPreparationResult = window.PasseDPreparation.searchPreparation({
+    player: document.querySelector('#player-input').value,
+    competition: document.querySelector('#competition-input').value,
+    stadium: document.querySelector('#stadium-input').value,
+  }, demoDatabase);
+  renderPreparationResult(lastPreparationResult);
+}
+
 async function loadMatch() {
   let homeTeam;
   let awayTeam;
@@ -126,9 +267,10 @@ async function loadMatch() {
     totalEvents = demoEvents.length;
     eventCount.textContent = `0 / ${totalEvents}`;
   } else {
-    const response = await fetch('/api/demo');
-    if (!response.ok) throw new Error('Données de rencontre indisponibles');
+    const [response, databaseResponse] = await Promise.all([fetch('/api/demo'), fetch('/data/demo_data.json')]);
+    if (!response.ok || !databaseResponse.ok) throw new Error('Données de rencontre indisponibles');
     const data = await response.json();
+    demoDatabase = await databaseResponse.json();
     homeTeam = data.home_team;
     awayTeam = data.away_team;
     stadium = data.stadium;
@@ -139,6 +281,10 @@ async function loadMatch() {
   document.querySelector('#away-team').textContent = awayTeam;
   document.querySelector('#stadium').textContent = stadium;
   document.querySelector('#competition').textContent = competition;
+  populateOptions('player-options', demoDatabase.players);
+  populateOptions('competition-options', demoDatabase.competitions);
+  populateOptions('stadium-options', demoDatabase.stadiums);
+  renderPinnedFacts();
 }
 
 function waitForReplay(milliseconds) {
@@ -257,6 +403,9 @@ function stopReplay() {
 
 startButton.addEventListener('click', startReplay);
 stopButton.addEventListener('click', stopReplay);
+liveTab.addEventListener('click', () => setView('live'));
+preparationTab.addEventListener('click', () => setView('preparation'));
+preparationForm.addEventListener('submit', searchPreparation);
 loadMatch()
   .then(() => {
     startButton.disabled = false;
