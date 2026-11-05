@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f2f4ef">
+    <title>Passe D · Régie en direct</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Passe D, accueil"><span class="mark">PD</span><span>Passe D</span></a>
+      <span class="demo-tag"><span></span>DÉMONSTRATION · DONNÉES FICTIVES</span>
+    </header>
+
+    <main>
+      <section class="match-strip" aria-label="Rencontre en cours">
+        <div class="match-meta"><span class="live-state" id="connection-state">PRÊT À LANCER</span><span id="competition">Ligue des Rives</span></div>
+        <div class="scoreboard">
+          <div class="team home-team"><span class="team-mark mark-home">A</span><span id="home-team">FC Astérion</span></div>
+          <div class="score"><span id="home-score">0</span><span class="score-separator">:</span><span id="away-score">0</span><small id="clock">--’</small></div>
+          <div class="team away-team"><span id="away-team">Étoile du Nord</span><span class="team-mark mark-away">N</span></div>
+        </div>
+        <div class="venue-line"><span class="venue-pin" aria-hidden="true">⌖</span><span id="stadium">Parc des Brumes</span></div>
+      </section>
+
+      <section class="control-row" aria-label="Commandes de simulation">
+        <div class="section-heading"><span class="eyebrow">ASSISTANCE ÉDITORIALE</span><h1>Régie du match</h1></div>
+        <div class="controls">
+          <button class="button button-primary" id="start-button" type="button"><span aria-hidden="true">▶</span> Lancer le direct</button>
+          <button class="button button-quiet" id="stop-button" type="button" disabled><span aria-hidden="true">■</span> Arrêter</button>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Fil du match et suggestions">
+        <div class="timeline-panel">
+          <div class="panel-head"><div><span class="eyebrow">CHRONOLOGIE</span><h2>Fil du match</h2></div><span class="event-count" id="event-count">0 / 4</span></div>
+          <ol class="timeline" id="timeline" aria-live="polite">
+            <li class="empty-timeline" id="empty-timeline"><span class="empty-icon">↗</span><span>Le fil apparaîtra au lancement de la simulation.</span></li>
+          </ol>
+        </div>
+
+        <aside class="suggestions-panel" aria-labelledby="suggestions-title">
+          <div class="panel-head"><div><span class="eyebrow">À L’ANTENNE</span><h2 id="suggestions-title">Suggestions</h2></div><span class="suggestion-count" id="suggestion-count">0</span></div>
+          <p class="suggestion-intro" id="suggestion-intro">Les informations vérifiées apparaîtront ici au fil du jeu.</p>
+          <div class="suggestion-list" id="suggestions" aria-live="polite" aria-relevant="additions text">
+            <div class="empty-suggestions" id="empty-suggestions">En attente du premier temps fort.</div>
+          </div>
+          <div class="source-note"><span class="source-dot"></span>Chaque fait renvoie à sa fiche source.</div>
+        </aside>
+      </section>
+      <footer>Prototype local · Aucun flux externe · Les faits affichés sont fictifs</footer>
+    </main>
+  </body>
+</html>

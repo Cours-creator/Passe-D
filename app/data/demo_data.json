@@ -1,0 +1,107 @@
+{
+  "match": {
+    "id": "match-demo-01",
+    "competition": "Ligue des Rives (démonstration)",
+    "home_team_id": "fc-aster",
+    "away_team_id": "etoile-nord",
+    "stadium_id": "parc-des-brumes",
+    "date": "2026-11-05"
+  },
+  "teams": [
+    {"id": "fc-aster", "name": "FC Astérion", "city": "Val-des-Lunes"},
+    {"id": "etoile-nord", "name": "Étoile du Nord", "city": "Montfaucon"}
+  ],
+  "players": [
+    {"id": "ines-vela", "name": "Inès Vela", "team_id": "fc-aster", "number": 9, "position": "Attaquante"},
+    {"id": "noe-sorin", "name": "Noé Sorin", "team_id": "fc-aster", "number": 6, "position": "Milieu"},
+    {"id": "maia-orne", "name": "Maïa Orne", "team_id": "etoile-nord", "number": 11, "position": "Attaquante"},
+    {"id": "ilan-deroz", "name": "Ilan Deroz", "team_id": "etoile-nord", "number": 4, "position": "Défenseur"},
+    {"id": "sacha-elve", "name": "Sacha Elve", "team_id": "fc-aster", "number": 17, "position": "Ailier"}
+  ],
+  "stadiums": [
+    {"id": "parc-des-brumes", "name": "Parc des Brumes", "city": "Val-des-Lunes", "capacity": 18400}
+  ],
+  "records": [
+    {
+      "id": "hist-vela-brumes-01",
+      "source_label": "Historique fictif · fiche joueur Inès Vela",
+      "title": "Un stade qui lui réussit",
+      "fact": "Inès Vela a inscrit un triplé au Parc des Brumes lors de la finale fictive de la Coupe des Rives 2024.",
+      "triggers": ["goal"],
+      "targets": {"player_id": "ines-vela", "stadium_id": "parc-des-brumes"},
+      "priority": 100
+    },
+    {
+      "id": "profile-vela-01",
+      "source_label": "Fiche joueur · Inès Vela",
+      "title": "Repère sur la buteuse",
+      "fact": "Inès Vela porte le numéro 9 et joue au poste d'attaquante pour le FC Astérion.",
+      "triggers": ["goal", "substitution", "yellow_card", "red_card"],
+      "targets": {"player_id": "ines-vela"},
+      "priority": 25
+    },
+    {
+      "id": "team-aster-01",
+      "source_label": "Fiche équipe · FC Astérion",
+      "title": "Le club recevant",
+      "fact": "Le FC Astérion représente Val-des-Lunes.",
+      "triggers": ["calm", "timeout", "goal", "yellow_card", "red_card", "substitution"],
+      "targets": {"team_id": "fc-aster"},
+      "priority": 10
+    },
+    {
+      "id": "team-nord-01",
+      "source_label": "Fiche équipe · Étoile du Nord",
+      "title": "L'équipe visiteuse",
+      "fact": "L'Étoile du Nord est basée à Montfaucon.",
+      "triggers": ["calm", "timeout", "goal", "yellow_card", "red_card", "substitution"],
+      "targets": {"team_id": "etoile-nord"},
+      "priority": 10
+    },
+    {
+      "id": "stadium-brumes-01",
+      "source_label": "Fiche stade · Parc des Brumes",
+      "title": "Le cadre du match",
+      "fact": "Le Parc des Brumes, à Val-des-Lunes, peut accueillir 18 400 spectateurs.",
+      "triggers": ["calm", "timeout"],
+      "targets": {"stadium_id": "parc-des-brumes"},
+      "priority": 20
+    },
+    {
+      "id": "match-demo-01",
+      "source_label": "Fiche rencontre · match-demo-01",
+      "title": "La rencontre du jour",
+      "fact": "Cette rencontre de démonstration oppose le FC Astérion à l'Étoile du Nord dans la Ligue des Rives.",
+      "triggers": ["calm", "timeout"],
+      "targets": {"match_id": "match-demo-01"},
+      "priority": 15
+    },
+    {
+      "id": "profile-sorin-01",
+      "source_label": "Fiche joueur · Noé Sorin",
+      "title": "Repère sur le joueur remplacé",
+      "fact": "Noé Sorin porte le numéro 6 et joue au poste de milieu pour le FC Astérion.",
+      "triggers": ["substitution", "yellow_card", "red_card"],
+      "targets": {"player_id": "noe-sorin"},
+      "priority": 20
+    },
+    {
+      "id": "profile-orne-01",
+      "source_label": "Fiche joueur · Maïa Orne",
+      "title": "Repère sur la joueuse",
+      "fact": "Maïa Orne porte le numéro 11 et joue au poste d'attaquante pour l'Étoile du Nord.",
+      "triggers": ["goal", "substitution", "yellow_card", "red_card"],
+      "targets": {"player_id": "maia-orne"},
+      "priority": 20
+    },
+    {
+      "id": "profile-elve-01",
+      "source_label": "Fiche joueur · Sacha Elve",
+      "title": "Repère sur le joueur entrant",
+      "fact": "Sacha Elve porte le numéro 17 et joue au poste d'ailier pour le FC Astérion.",
+      "triggers": ["substitution", "yellow_card", "red_card"],
+      "targets": {"player_id": "sacha-elve"},
+      "priority": 20
+    }
+  ]
+}

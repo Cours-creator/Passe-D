@@ -1,0 +1,42 @@
+[
+  {
+    "id": "evt-01",
+    "minute": 18,
+    "second": 42,
+    "type": "goal",
+    "player_id": "ines-vela",
+    "team_id": "fc-aster",
+    "description": "But du FC Astérion ! Inès Vela conclut dans la surface.",
+    "delay_seconds": 4
+  },
+  {
+    "id": "evt-02",
+    "minute": 31,
+    "second": 5,
+    "type": "yellow_card",
+    "player_id": "ilan-deroz",
+    "team_id": "etoile-nord",
+    "description": "Carton jaune pour Ilan Deroz après un tacle en retard.",
+    "delay_seconds": 5
+  },
+  {
+    "id": "evt-03",
+    "minute": 45,
+    "second": 0,
+    "type": "temps_mort",
+    "team_id": "fc-aster",
+    "description": "Pause de démonstration : les équipes se regroupent avant la reprise.",
+    "delay_seconds": 5
+  },
+  {
+    "id": "evt-04",
+    "minute": 63,
+    "second": 18,
+    "type": "substitution",
+    "player_out_id": "noe-sorin",
+    "player_in_id": "sacha-elve",
+    "team_id": "fc-aster",
+    "description": "Changement : Sacha Elve entre en jeu à la place de Noé Sorin.",
+    "delay_seconds": 4
+  }
+]
