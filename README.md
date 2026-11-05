@@ -33,7 +33,7 @@ python -m pytest -q
 node --test tests/test_preparation.js
 ```
 
-Les tests Python couvrent l’anecdote historique au bon stade, l’absence de suggestion sans correspondance, les informations de temps calme, la limite de trois résultats et les deux joueurs d’un remplacement. Les tests Node couvrent les recherches de préparation, les faits croisés, les combinaisons sans fait croisé, les entrées inconnues et l’affichage d’un fait épinglé en direct.
+Les tests Python couvrent l’anecdote historique au bon stade, l’absence de suggestion sans correspondance, les informations de temps calme, la limite de trois résultats et les deux joueurs d’un remplacement. Les tests Node couvrent les recherches de préparation, les faits croisés, les choix d’équipe à domicile et à l’extérieur, les combinaisons sans fait croisé, les entrées inconnues et l’affichage d’un fait épinglé dans les deux vues.
 
 ## Fonctionnement
 

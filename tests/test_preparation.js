@@ -68,6 +68,24 @@ test('trois champs renseignés font remonter des faits croisés', () => {
   assert(recordIndex < performanceIndex);
 });
 
+test('les choix domicile et extérieur retournent les bonnes équipes et leurs croisements', () => {
+  const home = searchPreparation({ homeTeam: 'FC Astérion' }, database);
+  const away = searchPreparation({ awayTeam: 'Étoile du Nord' }, database);
+  const fixture = searchPreparation({
+    homeTeam: 'FC Astérion',
+    awayTeam: 'Étoile du Nord',
+    competition: 'Ligue des Rives',
+    stadium: 'Parc des Brumes',
+  }, database);
+
+  assert(home.groups.find((group) => group.id === 'team').facts.some((fact) => fact.source_id === 'prep-team-aster-home-01'));
+  assert(away.groups.find((group) => group.id === 'team').facts.some((fact) => fact.source_id === 'prep-team-nord-away-01'));
+  const crossIds = fixture.groups.find((group) => group.id === 'cross').facts.map((fact) => fact.source_id);
+  assert(crossIds.includes('prep-team-fixture-01'));
+  assert(crossIds.includes('prep-team-aster-ligue-01'));
+  assert(crossIds.includes('prep-team-aster-brumes-01'));
+});
+
 test('un élément inconnu affiche une erreur claire', () => {
   const result = searchPreparation({ player: 'Joueur introuvable' }, database);
 

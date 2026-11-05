@@ -1,14 +1,17 @@
 (function (root) {
   const fields = [
-    { key: 'player_id', collection: 'players', noun: 'joueur', label: 'Joueur' },
-    { key: 'competition_id', collection: 'competitions', noun: 'championnat', label: 'Championnat' },
-    { key: 'stadium_id', collection: 'stadiums', noun: 'stade', label: 'Stade' },
+    { key: 'player_id', input: 'player', collection: 'players', category: 'player', label: 'Joueur', missing: 'Aucun joueur' },
+    { key: 'competition_id', input: 'competition', collection: 'competitions', category: 'competition', label: 'Championnat', missing: 'Aucun championnat' },
+    { key: 'stadium_id', input: 'stadium', collection: 'stadiums', category: 'stadium', label: 'Stade', missing: 'Aucun stade' },
+    { key: 'home_team_id', input: 'homeTeam', collection: 'teams', category: 'team', label: 'Équipe à domicile', missing: 'Aucune équipe à domicile' },
+    { key: 'away_team_id', input: 'awayTeam', collection: 'teams', category: 'team', label: 'Équipe à l’extérieur', missing: 'Aucune équipe à l’extérieur' },
   ];
   const categories = [
     { id: 'cross', label: 'Faits croisés' },
     { id: 'player', label: 'Joueur' },
     { id: 'competition', label: 'Championnat' },
     { id: 'stadium', label: 'Stade' },
+    { id: 'team', label: 'Équipe' },
   ];
   const interestOrder = { record: 0, performance: 1, statistic: 2 };
   const storageKey = 'passe-d-preparation-pins-v1';
@@ -18,7 +21,7 @@
   }
 
   function searchPreparation(criteria, database) {
-    const entered = fields.filter(({ collection }) => String(criteria[collection === 'players' ? 'player' : collection === 'competitions' ? 'competition' : 'stadium'] || '').trim());
+    const entered = fields.filter(({ input }) => String(criteria[input] || '').trim());
     if (!entered.length) {
       return { error: 'Renseignez au moins un champ pour lancer la recherche.', groups: [] };
     }
@@ -26,16 +29,18 @@
     const selected = {};
     const selectedCategories = [];
     for (const field of fields) {
-      const inputKey = field.collection === 'players' ? 'player' : field.collection === 'competitions' ? 'competition' : 'stadium';
-      const value = String(criteria[inputKey] || '').trim();
+      const value = String(criteria[field.input] || '').trim();
       if (!value) continue;
 
       const entity = (database[field.collection] || []).find((item) => normalize(item.name) === normalize(value));
       if (!entity) {
-        return { error: `Aucun ${field.noun} de la base ne correspond à « ${value} ».` , groups: [] };
+        return { error: `${field.missing} de la base ne correspond à « ${value} ».`, groups: [] };
       }
       selected[field.key] = entity.id;
-      selectedCategories.push(inputKey === 'player' ? 'player' : inputKey);
+      if (field.collection === 'teams') {
+        selected.team_ids = [...(selected.team_ids || []), entity.id];
+      }
+      selectedCategories.push(field.category);
     }
 
     const matches = (database.records || []).filter((record) => {
@@ -44,7 +49,9 @@
       const targets = Object.entries(preparation.targets || {});
       if (!targets.length) return false;
       if (preparation.category === 'cross' && targets.length < 2) return false;
-      return targets.every(([key, value]) => selected[key] === value);
+      return targets.every(([key, value]) => key === 'team_id'
+        ? (selected.team_ids || []).includes(value)
+        : selected[key] === value);
     });
 
     const sorted = matches.slice().sort((left, right) => {
@@ -58,7 +65,7 @@
         || left.id.localeCompare(right.id);
     });
 
-    const groupIds = selectedCategories.slice();
+    const groupIds = [...new Set(selectedCategories)];
     if (selectedCategories.length > 1) groupIds.unshift('cross');
     const groups = groupIds.map((id) => {
       const category = categories.find((item) => item.id === id);

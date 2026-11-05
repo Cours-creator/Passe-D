@@ -242,6 +242,8 @@ function searchPreparation(event) {
     player: document.querySelector('#player-input').value,
     competition: document.querySelector('#competition-input').value,
     stadium: document.querySelector('#stadium-input').value,
+    homeTeam: document.querySelector('#home-team-input').value,
+    awayTeam: document.querySelector('#away-team-input').value,
   }, demoDatabase);
   renderPreparationResult(lastPreparationResult);
 }
@@ -284,6 +286,7 @@ async function loadMatch() {
   populateOptions('player-options', demoDatabase.players);
   populateOptions('competition-options', demoDatabase.competitions);
   populateOptions('stadium-options', demoDatabase.stadiums);
+  populateOptions('team-options', demoDatabase.teams);
   renderPinnedFacts();
 }
 

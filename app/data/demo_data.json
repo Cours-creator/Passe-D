@@ -71,7 +71,8 @@
       "fact": "Le FC Astérion représente Val-des-Lunes.",
       "triggers": ["calm", "timeout", "goal", "yellow_card", "red_card", "substitution"],
       "targets": {"team_id": "fc-aster"},
-      "priority": 10
+      "priority": 10,
+      "preparation": {"category": "team", "interest": "statistic", "targets": {"team_id": "fc-aster"}}
     },
     {
       "id": "team-nord-01",
@@ -80,7 +81,78 @@
       "fact": "L'Étoile du Nord est basée à Montfaucon.",
       "triggers": ["calm", "timeout", "goal", "yellow_card", "red_card", "substitution"],
       "targets": {"team_id": "etoile-nord"},
-      "priority": 10
+      "priority": 10,
+      "preparation": {"category": "team", "interest": "statistic", "targets": {"team_id": "etoile-nord"}}
+    },
+    {
+      "id": "prep-team-aster-home-01",
+      "source_label": "Fiche rencontre · FC Astérion · match-demo-01",
+      "title": "Le club à domicile",
+      "fact": "Le FC Astérion reçoit l'Étoile du Nord dans cette rencontre de démonstration.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "team", "interest": "performance", "targets": {"home_team_id": "fc-aster"}}
+    },
+    {
+      "id": "prep-team-nord-away-01",
+      "source_label": "Fiche rencontre · Étoile du Nord · match-demo-01",
+      "title": "Le club visiteur",
+      "fact": "L'Étoile du Nord se déplace chez le FC Astérion pour cette rencontre de démonstration.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "team", "interest": "performance", "targets": {"away_team_id": "etoile-nord"}}
+    },
+    {
+      "id": "prep-team-aster-ligue-01",
+      "source_label": "Fiche équipe · FC Astérion · Ligue des Rives",
+      "title": "Le club en championnat",
+      "fact": "Le FC Astérion est inscrit en Ligue des Rives pour la saison fictive 2026-2027.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "performance", "targets": {"team_id": "fc-aster", "competition_id": "ligue-rives"}}
+    },
+    {
+      "id": "prep-team-nord-ligue-01",
+      "source_label": "Fiche équipe · Étoile du Nord · Ligue des Rives",
+      "title": "Le club en championnat",
+      "fact": "L'Étoile du Nord est inscrite en Ligue des Rives pour la saison fictive 2026-2027.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "performance", "targets": {"team_id": "etoile-nord", "competition_id": "ligue-rives"}}
+    },
+    {
+      "id": "prep-team-aster-brumes-01",
+      "source_label": "Fiche rencontre · FC Astérion · Parc des Brumes",
+      "title": "Recevoir au Parc des Brumes",
+      "fact": "Le FC Astérion reçoit l'Étoile du Nord au Parc des Brumes dans cette démonstration.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "record", "targets": {"home_team_id": "fc-aster", "stadium_id": "parc-des-brumes"}}
+    },
+    {
+      "id": "prep-team-nord-brumes-01",
+      "source_label": "Fiche rencontre · Étoile du Nord · Parc des Brumes",
+      "title": "Le déplacement au Parc",
+      "fact": "L'Étoile du Nord se déplace au Parc des Brumes pour affronter le FC Astérion.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "record", "targets": {"away_team_id": "etoile-nord", "stadium_id": "parc-des-brumes"}}
+    },
+    {
+      "id": "prep-team-fixture-01",
+      "source_label": "Fiche rencontre · match-demo-01",
+      "title": "L’affiche de la démonstration",
+      "fact": "La rencontre oppose le FC Astérion, à domicile, à l'Étoile du Nord.",
+      "triggers": [],
+      "targets": {},
+      "priority": 0,
+      "preparation": {"category": "cross", "interest": "record", "targets": {"home_team_id": "fc-aster", "away_team_id": "etoile-nord"}}
     },
     {
       "id": "stadium-brumes-01",
