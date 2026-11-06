@@ -39,7 +39,7 @@ button, input { font: inherit; }
 .mark { display: grid; width: 32px; height: 32px; place-items: center; background: var(--lime); color: #10150b; font: 700 12px var(--mono); }
 .demo-tag { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 12px var(--mono); }
 .demo-tag span, .source-dot { width: 8px; height: 8px; flex: 0 0 8px; background: var(--lime); }
-.view-tabs { display: flex; align-items: center; gap: 4px; padding: 3px; background: #1b2822; }
+.view-tabs { position: absolute; left: 50%; display: flex; align-items: center; gap: 4px; padding: 3px; transform: translateX(-50%); background: #1b2822; }
 .view-tab { min-height: 44px; padding: 0 16px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 700; }
 .view-tab:hover { color: var(--ink); }
 .view-tab.is-active { background: var(--lime); color: #10150b; }
@@ -177,8 +177,8 @@ footer { padding-top: 14px; color: var(--muted); font: 12px var(--mono); }
   .wordmark { grid-column: 1; }
   .topbar > .demo-tag { grid-column: 2; grid-row: 1; justify-self: end; text-align: right; font-size: 12px; }
   .topbar > .demo-tag { flex-wrap: wrap; justify-content: flex-end; }
-  .view-tabs { grid-column: 1 / -1; grid-row: 2; }
-  .view-tab { flex: 1; }
+  .view-tabs { position: static; grid-column: 1 / -1; grid-row: 2; justify-self: center; width: max-content; max-width: 100%; transform: none; }
+  .view-tab { min-width: 110px; }
   main { padding: 16px 16px 20px; }
   .match-strip { min-height: 142px; padding: 12px 12px; }
   .match-meta { flex-wrap: wrap; gap: 6px 9px; font-size: 12px; }
