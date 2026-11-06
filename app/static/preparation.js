@@ -7,7 +7,7 @@
     { key: 'away_team_id', input: 'awayTeam', collection: 'teams', category: 'team', label: 'Équipe à l’extérieur', missing: 'Aucune équipe à l’extérieur' },
   ];
   const categories = [
-    { id: 'cross', label: 'Faits croisés' },
+    { id: 'cross', label: 'Match' },
     { id: 'player', label: 'Joueur' },
     { id: 'competition', label: 'Championnat' },
     { id: 'stadium', label: 'Stade' },

@@ -38,6 +38,9 @@ const labels = {
   red_card: 'Carton rouge',
   substitution: 'Remplacement',
   temps_mort: 'Temps mort',
+  whistle: 'Coup de sifflet',
+  penalty: 'Tir au but',
+  penalty_shootout: 'Tir au but',
   calm: 'Temps calme',
 };
 
@@ -49,6 +52,16 @@ function showStatus(text, active = false) {
 function resetView() {
   timeline.replaceChildren();
   suggestions.replaceChildren();
+  const emptyTimeline = document.createElement('li');
+  emptyTimeline.className = 'empty-timeline';
+  emptyTimeline.id = 'empty-timeline';
+  emptyTimeline.textContent = 'Le fil apparaîtra au lancement de la simulation.';
+  timeline.append(emptyTimeline);
+  const emptySuggestions = document.createElement('div');
+  emptySuggestions.className = 'empty-suggestions';
+  emptySuggestions.id = 'empty-suggestions';
+  emptySuggestions.textContent = 'En attente du premier temps fort.';
+  suggestions.append(emptySuggestions);
   score = { home: 0, away: 0 };
   receivedEvents = 0;
   document.querySelector('#home-score').textContent = '0';
@@ -56,6 +69,7 @@ function resetView() {
   document.querySelector('#clock').textContent = '--’';
   eventCount.textContent = `0 / ${totalEvents}`;
   suggestionCount.textContent = '0';
+  suggestionIntro.textContent = 'Les informations vérifiées apparaîtront ici au fil du jeu.';
 }
 
 function addTimelineEntry(event, kind = 'event') {
@@ -64,6 +78,7 @@ function addTimelineEntry(event, kind = 'event') {
 
   const item = document.createElement('li');
   item.className = 'timeline-entry';
+  item.classList.add('is-latest');
   const time = document.createElement('span');
   time.className = 'event-time';
   time.textContent = `${event.minute}’${String(event.second).padStart(2, '0')}`;
@@ -76,7 +91,9 @@ function addTimelineEntry(event, kind = 'event') {
   text.textContent = event.description;
   copy.append(type, text);
   item.append(time, copy);
-  timeline.append(item);
+  timeline.prepend(item);
+  timeline.scrollTop = 0;
+  window.setTimeout(() => item.classList.remove('is-latest'), 1700);
 
   if (event.type === 'goal') {
     if (event.team_id === 'fc-aster') score.home += 1;
@@ -113,14 +130,22 @@ function renderSuggestions(items, kind) {
     fact.textContent = suggestion.fact;
     const source = document.createElement('span');
     source.className = 'suggestion-source';
-    source.textContent = `SOURCE ${suggestion.source_id} · ${suggestion.source_label}`;
-    card.append(title, fact, source);
+    source.textContent = `Source : ${suggestion.source_label}`;
+    const details = document.createElement('details');
+    details.className = 'source-details';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Détails de vérification';
+    const identifier = document.createElement('code');
+    identifier.textContent = suggestion.source_id;
+    details.append(summary, identifier);
+    card.append(title, fact, source, details);
     suggestions.append(card);
   }
 }
 
 function setView(view) {
   const showPreparation = view === 'preparation';
+  document.body.classList.toggle('preparation-active', showPreparation);
   liveView.hidden = showPreparation;
   preparationView.hidden = !showPreparation;
   liveTab.classList.toggle('is-active', !showPreparation);
@@ -150,20 +175,28 @@ function createPreparationCard(fact, pinned = false) {
   copy.textContent = fact.fact;
   const source = document.createElement('span');
   source.className = 'preparation-fact-source';
-  source.textContent = `SOURCE ${fact.source_id} · ${fact.source_label}`;
+  source.textContent = `Source : ${fact.source_label}`;
+  const details = document.createElement('details');
+  details.className = 'source-details';
+  const summary = document.createElement('summary');
+  summary.textContent = 'Détails de vérification';
+  const identifier = document.createElement('code');
+  identifier.textContent = fact.source_id;
+  details.append(summary, identifier);
   const button = document.createElement('button');
   button.className = 'pin-button';
   button.type = 'button';
   button.setAttribute('aria-pressed', String(pinned));
   button.textContent = pinned ? 'Retirer de la fiche' : 'Épingler pour le match';
   button.addEventListener('click', () => toggleFactPin(fact));
-  card.append(title, copy, source, button);
+  card.append(title, copy, source, details, button);
   return card;
 }
 
 function renderPinnedFacts() {
   const facts = window.PasseDPreparation.readPinnedFacts();
   pinnedSection.hidden = facts.length === 0;
+  document.querySelector('#preparation-pin-empty').hidden = facts.length > 0;
   pinnedCount.textContent = String(facts.length);
   preparationPinnedSection.hidden = facts.length === 0;
   preparationPinCount.textContent = `${facts.length} FAIT${facts.length === 1 ? '' : 'S'}`;
